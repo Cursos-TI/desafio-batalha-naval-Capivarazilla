@@ -31,29 +31,29 @@ void printBoard(char matrix[SIZE_LINE][SIZE_COLUMN]){
 //Função para verificar os espaços do tabuleiro (se direction == 0, horizontal, se direction == 1, vertical)
 int verifySpace(char board[SIZE_LINE][SIZE_COLUMN], int line, int column, int direction){
     for (int i = 0; i < SIZE_SHIP; i++){
-        int newLine = line + (direction == 0 ? 0 : i);
-        int newColumn = column + (direction == 1 ? 0 : i);
-
-        if (newLine >= SIZE_LINE || newColumn >= SIZE_COLUMN || board[newLine][newColumn] == '3'){ //Condicional para evitar navios sendo colocados fora do tabuleiro ou se interpondo
-           return 0; //Retorna 0 caso haja sobreposição ou falte espaço no tabuleiro
+        int newLine = line + (direction == 1 ? i : 0) + (direction == 2 ? i : 0); // Verificação das direções horizontais e diagonais
+        int newColumn = column + (direction == 0 ? i : 0) + (direction == 2 ? i : 0);  // Verificação das direções verticais e diagonais
+        
+        // Verifica se a posição é válida e se não há sobreposição de navios
+        if (newLine >= SIZE_LINE || newColumn >= SIZE_COLUMN || board[newLine][newColumn] == '3') {
+            return 0; // Se inválido, retorna 0
         }
     }
-    return 1; //Retorna 1 caso o espaço seja válido
+    return 1; // Se espaço válido, retorna 1
 }
-
 // Função para criar os navios no tabuleiro
-void setShip(char board[SIZE_LINE][SIZE_COLUMN]){
-    int line, column, direction;
+void setShip(char board[SIZE_LINE][SIZE_COLUMN], int direction){
+    int line, column;
 
     do {
         line = rand() % SIZE_LINE;
         column = rand() % SIZE_COLUMN;
-        direction = rand() % 2;
+        //direction = rand() % 2;
     } while (!verifySpace(board, line, column, direction));
 
     for (int i = 0; i < SIZE_SHIP; i++){
-        int newLine = line + (direction == 0 ? 0 : i);
-        int newColumn = column + (direction == 1 ? 0 : i);
+        int newLine = line + (direction == 1 ? i : 0) + (direction == 2 ? i : 0);
+        int newColumn = column + (direction == 0 ? i : 0) + (direction == 2 ? i : 0);
         board[newLine][newColumn] = '3'; //Marca no navio na posição correta
     }
 }
@@ -64,12 +64,36 @@ int main(){
     srand(time(NULL)); //Iniciando randomizador baseado do no tempo atual
 
     char board[SIZE_LINE][SIZE_COLUMN];
+    int horizontalCount = 0, verticalCount = 0;
 
 
     startBoard(board);
 
+    //Força dois navios a serem diagonais
     for (int i = 0; i < 2; i++){
-        setShip(board);
+        setShip(board, 2);
+    }
+    
+    //Escolhe aleatóriamente se os navios serão verticais ou horizontais
+    for (int i = 0; i < 2; i++){
+        int direction = rand() % 2; //Determina um valor entre 0(horizontal) ou 1(vertical)
+
+        if (direction == 0 && horizontalCount < 2){
+            setShip(board, direction);
+            horizontalCount++;
+        } 
+        else if (direction == 1 && verticalCount < 2) {
+            setShip(board, direction);
+            verticalCount++;
+        }
+        else if (horizontalCount < 2){
+            setShip(board, 0);
+            horizontalCount++;
+        }
+        else if (verticalCount < 2){
+            setShip(board, 1);
+            verticalCount++;
+        }
     }
     
 
