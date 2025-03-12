@@ -6,6 +6,7 @@
 #define SIZE_LINE 10
 #define SIZE_COLUMN 10
 #define SIZE_SHIP 3
+#define SIZE_POWER 5
 
 //Função para iniciar o tabuleiro vazio, '0'
 void startBoard(char board[SIZE_LINE][SIZE_COLUMN]){
@@ -22,7 +23,7 @@ void printBoard(char matrix[SIZE_LINE][SIZE_COLUMN]){
     for (int i = 0; i < SIZE_LINE; i++)    {
         printf("%2d ", i+1); //Enumeração das linhas
         for (int j = 0; j < SIZE_COLUMN; j++){
-            printf("%c ", matrix[i][j] == '3' ? '3' : '0');
+            printf("%c ", matrix[i][j]);
         }
         printf("\n");
     }
@@ -58,6 +59,46 @@ void setShip(char board[SIZE_LINE][SIZE_COLUMN], int direction){
     }
 }
 
+void createCone(int matrix[SIZE_POWER][SIZE_POWER]){
+    int mid = SIZE_POWER / 2;
+    for (int i = 0; i < SIZE_POWER; i++){
+        for (int j = 0; j < SIZE_POWER; j++){
+            matrix[i][j] = (j >= mid - i && j <= mid + i) ? 1 : 0;
+        }   
+    }
+}
+
+
+void createCross(int matrix[SIZE_POWER][SIZE_POWER]){
+    for (int i = 0; i < SIZE_POWER; i++){
+        for (int j = 0; j < SIZE_POWER; j++){
+            matrix[i][j] = (i == SIZE_POWER / 2 || j == SIZE_POWER / 2) ? 1 : 0;
+        }   
+    }
+}
+
+void createDiamond(int matrix[SIZE_POWER][SIZE_POWER]){
+    int mid = SIZE_POWER / 2;
+    for (int i = 0; i < SIZE_POWER; i++){
+        for (int j = 0; j < SIZE_POWER; j++){
+            matrix[i][j] = (abs(i - mid) + abs (j - mid) <= mid) ? 1 : 0;
+        }   
+    }
+}
+
+void setPower(char board[SIZE_LINE][SIZE_COLUMN], int matrix[SIZE_POWER][SIZE_POWER], int startLine, int startColumn){
+    for (int i = 0; i < SIZE_POWER; i++){
+        for (int j = 0; j < SIZE_POWER; j++){
+            int line = startLine + i - SIZE_POWER / 2;
+            int column = startColumn + j - SIZE_POWER / 2;
+            if (line >= 0 && line < SIZE_LINE && column >= 0 && column < SIZE_COLUMN && matrix[i][j] == 1){
+                board[line][column] = '5';
+            }
+            
+        }   
+    }
+}
+
 
 
 int main(){
@@ -66,8 +107,11 @@ int main(){
     char board[SIZE_LINE][SIZE_COLUMN];
     int horizontalCount = 0, verticalCount = 0;
 
-
     startBoard(board);
+
+    int conePower[SIZE_POWER][SIZE_POWER];
+    int crossPower[SIZE_POWER][SIZE_POWER];
+    int diamondPower[SIZE_POWER][SIZE_POWER];
 
     //Força dois navios a serem diagonais
     for (int i = 0; i < 2; i++){
@@ -95,7 +139,14 @@ int main(){
             verticalCount++;
         }
     }
-    
+
+    createCone(conePower);
+    createCross(crossPower);
+    createDiamond(diamondPower);
+
+    setPower(board, conePower, 2, 2);
+    setPower(board, crossPower, 2, 7);
+    setPower(board, diamondPower, 7, 7);
 
     printBoard(board);
 
