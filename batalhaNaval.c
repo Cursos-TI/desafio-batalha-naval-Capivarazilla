@@ -59,39 +59,42 @@ void setShip(char board[SIZE_LINE][SIZE_COLUMN], int direction){
     }
 }
 
+//Função para criar o poder em formato de cone no tabuleiro
 void createCone(int matrix[SIZE_POWER][SIZE_POWER]){
     int mid = SIZE_POWER / 2;
     for (int i = 0; i < SIZE_POWER; i++){
         for (int j = 0; j < SIZE_POWER; j++){
-            matrix[i][j] = (j >= mid - i && j <= mid + i) ? 1 : 0;
+            matrix[i][j] = (j >= mid - i && j <= mid + i) ? 1 : 0; //Verifica se j está no intervalo do cone enquanto i aumenta
         }   
     }
 }
 
-
+//Função para criar o poder em formato de cruz no tabuleiro
 void createCross(int matrix[SIZE_POWER][SIZE_POWER]){
     for (int i = 0; i < SIZE_POWER; i++){
         for (int j = 0; j < SIZE_POWER; j++){
-            matrix[i][j] = (i == SIZE_POWER / 2 || j == SIZE_POWER / 2) ? 1 : 0;
+            matrix[i][j] = (i == SIZE_POWER / 2 || j == SIZE_POWER / 2) ? 1 : 0; // Células onde i ou j são iguais ao meio recebem 1
         }   
     }
 }
 
+//Função para criar o poder em formato de losango no tabuleiro
 void createDiamond(int matrix[SIZE_POWER][SIZE_POWER]){
     int mid = SIZE_POWER / 2;
     for (int i = 0; i < SIZE_POWER; i++){
         for (int j = 0; j < SIZE_POWER; j++){
-            matrix[i][j] = (abs(i - mid) + abs (j - mid) <= mid) ? 1 : 0;
+            matrix[i][j] = (abs(i - mid) + abs (j - mid) <= mid) ? 1 : 0; //Após definir ponto central (mid) cria um losango ao redor deste ponto
         }   
     }
 }
 
+//Função para inserir os poderes no tabuleiro
 void setPower(char board[SIZE_LINE][SIZE_COLUMN], int matrix[SIZE_POWER][SIZE_POWER], int startLine, int startColumn){
     for (int i = 0; i < SIZE_POWER; i++){
         for (int j = 0; j < SIZE_POWER; j++){
             int line = startLine + i - SIZE_POWER / 2;
             int column = startColumn + j - SIZE_POWER / 2;
-            if (line >= 0 && line < SIZE_LINE && column >= 0 && column < SIZE_COLUMN && matrix[i][j] == 1){
+            if (line >= 0 && line < SIZE_LINE && column >= 0 && column < SIZE_COLUMN && matrix[i][j] == 1){ //Confere se uma posição i, j está dentro da matriz com valor 1
                 board[line][column] = '5';
             }
             
@@ -140,10 +143,12 @@ int main(){
         }
     }
 
+    //Chamada para criação das matrizes dos poderes
     createCone(conePower);
     createCross(crossPower);
     createDiamond(diamondPower);
 
+    //Inserção das matrizes dos poderes no tabuleiro
     setPower(board, conePower, 2, 2);
     setPower(board, crossPower, 2, 7);
     setPower(board, diamondPower, 7, 7);
